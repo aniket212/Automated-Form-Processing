@@ -1,0 +1,10 @@
+image_to_edit = "4.png"
+delta = 0.25	
+limit = 10
+Binarization_Threshold = 230
+HProfile_threshold = 0.35
+VProfile_threshold = 0.05
+no_of_rows = 10
+no_of_cols = [2, 2, 3, 3, 3, 3, 6, 6, 6, 6, 1]
+image_cols_name=["CONSIGNEE","DESTINATION","ROUTE","ACCOUNT#", "SHIP DATE","LOCATION","DEPARTMENT", "CODE","BUTANE"]
+path = "F:/My projects/HRT Project/HRT_Final/Cropped_Images"
