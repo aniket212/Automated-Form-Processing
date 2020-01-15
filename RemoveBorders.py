@@ -11,7 +11,7 @@ def remove(img):
 		temp_sum = 0
 		for j in range(cols):
 			temp_sum += BinarizedImage[i,j]
-		if temp_sum<int(0.15*255*cols):
+		if temp_sum<int(0.60*255*cols):
 			upper_height = i+5
 		else:
 			break

@@ -8,35 +8,22 @@ from keras.layers import Dense, Dropout, Flatten
 import numpy as np
 from keras.layers import Conv2D, MaxPooling2D
 from keras.utils import np_utils
+import RemoveBorders
+import pytesseract
 
+#Dictionay to store keys and values of corresponding handwritten cells
 handwritten_dict={}
-def removeBlackPixels():
-	img = cv2.imread("Cropped_Images/row_11_col_1.png")
-	cv2.imshow('', img)
-	cv2.waitKey(0)
-	# img = PreProcessing.Binarization(img)
-
-	rows,cols = img.shape[:2]
-
-	for i in range(rows-1):
-		for j in range(cols-1):
-			B = img[i][j][0]
-			G = img[i][j][1]
-			R = img[i][j][2]
-			if (R<130 and G<130 and B<130):
-				img[i][j] = [255,255,255]
-			else:	
-				print(R,G,B)
-
-	cv2.imshow('', img)
-	cv2.waitKey(0)
-	return img
 
 def FindBoundary(crop_img):
-	rows, cols = crop_img.shape[:] 
+	rows, cols = crop_img.shape 
 	flag=False 
 	vertical_sum=[]
 	horizontal_sum=[]
+	x=0
+	y=0
+	w=0
+	h=0
+
 	for j in range(cols):
 		temp_sum = 0
 		for i in range(rows):
@@ -48,6 +35,7 @@ def FindBoundary(crop_img):
 		for j in range(cols):
 			temp_sum += crop_img[i,j]
 		horizontal_sum.append(temp_sum) 
+
 	temp = 255*rows
 	for i in range(len(vertical_sum)):
 		if vertical_sum[i]!=temp:
@@ -68,30 +56,35 @@ def FindBoundary(crop_img):
 			break 
 	return crop_img[y:h,x:w] 
 
+# Function predicts the digit from the image
 def get_Prediction(img): 
+	#Reshaping the image to 28*28
 	img = np.reshape(img,[1,28,28,1])
-	y_pred1=model.predict(img)
+	y_pred1=model.predict(img) 
 	prediction=np.argmax(y_pred1,axis=1)
 	return prediction
 
+#Returns the number formed after appending the digits in the image
 def GetDigits(img):
 	img = PreProcessing.Binarization(img)
-	cv2.imshow('', img) 
+	cv2.imshow('binarized number', img) 
+	cv2.waitKey(0)
 	rows,cols = img.shape[:] 
-	cols_coordinates = []
+	cols_coordinates = [0]
 	number=''
 	flag = True
 	for j in range(0,cols):
 
 		temp_sum = 0
 		for i in range(0,rows):
-			temp_sum += img[i][j]
+			temp_sum += img[i][j]  
 
-		if temp_sum == 255*rows and flag:
+		#Detecting column of all white pixels and then splitting the digits from the image	
+		if temp_sum == 255*rows and not flag:
 			cols_coordinates.append(j+5)
-			flag = False
-		if temp_sum<255*rows:
 			flag = True
+		if temp_sum!=255*rows and flag:
+			flag = False
 
 	print(cols_coordinates)
 	if len(cols_coordinates)>0: 
@@ -130,43 +123,49 @@ def GetDigits(img):
 				    count=count+1
 		if count>=(200):
 			digit="1"
-		print(digit,count) 
+		print(digit) 
 		#Appending each digit to form a  number
 		number=number + digit 
 	return number	
 
-def get_handwritten_dict():
-	image_indices=GlobalVariables.handwritten_img_indices
-	cols_names=GlobalVariables.handwritten_cols_names
-	no_of_rows = GlobalVariables.no_of_rows 
-	no_of_cols = GlobalVariables.no_of_cols 
-	count=0
-	for row in range(no_of_rows):
-		for col in range(len(no_of_cols[row])): 
-			count=count+1
-			if count in image_indices: 	
-				image_name='Cropped_Images/row'    +'_' + str(row+1) +  '_' + 'col' + '_' + str(col+1) +   str('.png')
-				image=cv2.imread(image_name) 
-				temp=(count-5)%len(cols_names)  
-				key=cols_names[temp]
-				value=GetDigits(image) 
-				if key not in handwritten_dict.keys(): 
-					value_list=[]
-					value_list.append(value)
-					handwritten_dict[key]=value_list
-				else:
-					value_lst=handwritten_dict[key]
-					value_lst.append(value)
-					handwritten_dict[key]=value_lst 
-	return handwritten_dict	
+# Returns the Dictionary of handwritten characters
+def check_white_img(image):
+	image = PreProcessing.Binarization(image)
+	rows,cols=image.shape
+	sum1=0
+	for i in range(int(rows/2)-10,int(rows/2)+10):
+		for j in range(10,cols-10):
+			sum1=sum1+image[i,j]
+	white=255*20*(cols-20)
+	if sum1 >= int(0.99*white):
+		return True
+	return False	
+ 
+def get_handwritten_dict(RotatedImage, FINAL_CROP_IMAGES_COORDINATES):
+	image_dict = GlobalVariables.handwritten_info_dict
+	final_ans = {}
+
+	for key in image_dict.keys():
+		value_list = image_dict[key]
+		VALUE = []
+		for element in value_list:
+			value_image_index = FINAL_CROP_IMAGES_COORDINATES[element-1]
+			y = value_image_index[0]
+			x = value_image_index[1]
+			w = value_image_index[2]
+			h = value_image_index[3]
+			value_image = RotatedImage[y:y+h, x:x+w]
+			value_image = RemoveBorders.remove(value_image)
+			if check_white_img(value_image):
+				VALUE.append("")
+			else:
+				VALUE.append(str(GetDigits(value_image)))
+		if key=='INCHES OUT':
+			final_ans[key] = [VALUE[0][1:]]
+		else:
+			final_ans[key] = VALUE
+	return final_ans
 
 #Loading Model 
 model_name=GlobalVariables.Model_Name
-model=load_model(model_name)  
-
-#img = removeBlackPixels()
-'''image_indices_handwritten=GlobalVariables.handwritten_img_indices 
-for  
-
-img = cv2.imread('Cropped_Images/row_8_col_1.png')
-GetDigits(img)'''
+model=load_model(model_name) 

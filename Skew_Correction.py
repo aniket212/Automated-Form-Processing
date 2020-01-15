@@ -2,7 +2,7 @@ import sys
 import cv2
 import numpy as np
 import PIL.ImageOps
-import Settings
+import GlobalVariables
 from PIL import Image as im
 from scipy.ndimage import interpolation as inter
 from matplotlib import pyplot as plt
@@ -19,8 +19,8 @@ def Correct_skew(imageName):
 	pix = np.array(img.convert('1').getdata(), np.uint8)
 	bin_img = 1 - (pix.reshape((ht, wd)) / 255.0)
 
-	delta = Settings.delta
-	limit = Settings.limit
+	delta = GlobalVariables.delta
+	limit = GlobalVariables.limit
 	angles = np.arange(-limit, limit+delta, delta)
 	scores = []
 	for angle in angles:
@@ -29,7 +29,7 @@ def Correct_skew(imageName):
 
 	best_score = max(scores)
 	best_angle = angles[scores.index(best_score)]
-	print('Best angle: {}'.format(best_angle))
+	print('Image is rotated by the angle: {}'.format(best_angle))
 
 	img = im.open(imageName)
 	im2 = img.convert('RGBA')

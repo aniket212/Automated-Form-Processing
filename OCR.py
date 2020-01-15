@@ -10,7 +10,6 @@ from PIL import Image as im
 from scipy.ndimage import interpolation as inter
 import PreProcessing
 import GlobalVariables
-pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe' 
 
 form_dict={}
 
@@ -21,6 +20,7 @@ def get_form_text(crp_img):
 	value_start = 0
 	value_end = 0
 
+	# Skipping all spaces and special characters
 	for index in range(len(text)):
 		ch = text[index]
 		if ch in [' ','|','#','-','',';']:
@@ -36,6 +36,7 @@ def get_form_text(crp_img):
 		else:
 			break
 	
+	#Storing the starting index of the value
 	for index in range(key_end, len(text)):
 		ch = text[index]
 		if ch in [':']:
@@ -52,6 +53,8 @@ def OCR_DICT():
 	no_of_cols = GlobalVariables.no_of_cols
 
 	count=0
+
+	#Iterating through each cell in the image
 	for row in range(no_of_rows):
 		for col in range(len(no_of_cols[row])): 
 			count=count+1

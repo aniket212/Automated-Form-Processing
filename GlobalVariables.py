@@ -1,21 +1,15 @@
-image_to_edit = "5.jpg"
-delta = 0.25	
+image_to_edit = "5.png"
+delta = 0.5	
 limit = 10
 Binarization_Threshold = 230
 HProfile_threshold = 0.35
 VProfile_threshold = 0.05
-no_of_rows = 10
+no_of_rows = 10 
 no_of_cols = [[80,100], [50,100], [33,66,99], [33,66,99], [33,66,99], [20,50,100], [20,30,50,60,80,100], [20,30,50,60,80,100], [20,30,50,60,80,100], [20,30,50,60,80,100], [100]]
 image_indices = [1,3,4,5,7,8,11,14,15]
-handwritten_img_indices=[23,24,25,26,27,28,31,33,34,35,36]
-handwritten_cols_names=["CAPACITY","OUTAGE","GROSS","TEMP","NET","WEIGHT"]
-path = "F:/My projects/HRT Project/preet/Cropped_Images" 
+handwritten_info_dict = {'ORDER':[9,12], 'INCHES OUT':[13], 'CAPACITY':[23,29,35], 'OUTAGE':[24,30,36], 'GROSS':[25,31,37], 'TEMP':[26,32,38], 'NET':[27,33,39], 'WEIGHT':[28,34,40]}
+Cropped_path = "/home/nagadiapreet/Desktop/G Drive/HRT Project/FINAL/Cropped_Images/"
+Output_path = "/home/nagadiapreet/Desktop/G Drive/HRT Project/FINAL/OUTPUT/"
 Model_Name = 'cnn_model.h5'
-
-
-# George Washington database
-# IAM database
-# CENPARMI
-# Percival database
-# digits handwriten database
-# alpabets handwriten database
+FooterName = 'Cropped_Images/row_11_col_1.png'
+last_part_keys = ['GRAV','CORR','SEALS','LL','TARE','DOT','CUSTOMS']
