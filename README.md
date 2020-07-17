@@ -8,3 +8,6 @@ To detect rows and columns in a graph we used the Histogram Analysis based metho
 We have used the pytesseract library of python to perform OCR in OCR related form fields.
 
 A Convolutional Neural Network model was build using keras library for handwritten Digit Recognition.     
+
+# Command to run the project
+```python main.py```
